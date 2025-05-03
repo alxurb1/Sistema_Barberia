@@ -3,7 +3,7 @@ import helmet from "helmet";
 import morgan from "morgan";
 import cors from "cors";
 import dotenv from "dotenv";
-import productRoute from "./routes/productRoute.js"
+import haircutsRoute from "./routes/haircutsRoute.js"
 import { sql } from "./config/database.js";
 
 dotenv.config();
@@ -47,7 +47,7 @@ async function initDB() {
         console.log("Error en initDB", error)
     }
 }
-app.use("/api/products", productRoute);
+app.use("/api/haircuts", haircutsRoute);
 
 app.get('/test',(req,res)=> {
     console.log(res.getHeaders());

@@ -4,9 +4,9 @@ import { createHaircut,getHaircuts,getHaircut,updateHaircut, deleteHaircut} from
 const router = express.Router();
 
 router.get("/",getHaircuts);
-router.get("/:id",getHaircut)
+router.get("/:id_corte",getHaircut)
 router.post("/",createHaircut);
-router.post("/:id",updateHaircut);
-router.delete("/:id",deleteHaircut)
+router.put("/:id_corte",updateHaircut);
+router.delete("/:id_corte",deleteHaircut)
 
 export default router;

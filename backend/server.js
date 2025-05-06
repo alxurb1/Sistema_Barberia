@@ -1,4 +1,4 @@
-import express from "express";
+import express, { application } from "express";
 import helmet from "helmet";
 import morgan from "morgan";
 import cors from "cors";
@@ -7,6 +7,8 @@ import haircutsRoute from "./routes/haircutsRoute.js"
 import clientsRoute from "./routes/clientsRoute.js"
 import reservationsRoute from "./routes/reservationsRoute.js"
 import { sql } from "./config/database.js";
+import { aj } from "./lib/arcjet.js"
+import App from "../frontend/src/App.jsx";
 
 dotenv.config();
 
@@ -19,32 +21,34 @@ app.use(helmet()); //helmet es un middleware de seguridad que se encarga de prot
 app.use(morgan("dev")); // morgan se encarga de pintar los requests en la consola 
 
 //APLICACION DE ARCJET 
-app.use(async(req,res,next)=> {
-    try {
-        const decision = await aj.protect(req, {
-            requested:1 //cada peticion consume un token 
-        })
-        if(decision.isDenied()){
-            if(decision.reason.isRateLimit()){
-                res.status(429).json({error: "Muchas Peticiones"});
+if (process.env.ARCJET_ENV !== "development"){
+    app.use(async(req,res,next)=> {
+        try {
+            const decision = await aj.protect(req, {
+                requested:1 //cada peticion consume un token 
+            })
+            if(decision.isDenied()){
+                if(decision.reason.isRateLimit()){
+                    res.status(429).json({error: "Muchas Peticiones"});
+                }
+                else if (decision.reason.isBot()){
+                    res.status(403).json({error: "Bot no permitido"});
+                } else {
+                    res.status(403).json({error:"Prohibido"});
+                }
+                return
             }
-            else if (decision.reason.isBot()){
-                res.status(403).json({error: "Bot no permitido"});
-            } else {
-                res.status(403).json({error:"Prohibido"});
+            if (decision.results.some((result) => result.reason.isBot() && result.reason.isSpoofed())) {
+                res.status(403).json({error:"Suplantacion de identidad detectada"});
+                return;
             }
-            return
+            next()
+        } catch (error) {
+            console.log("Arcjet error", error);
+            next(error);
         }
-        if (decision.results.some((result) => result.reason.isBot() && result.reason.isSpoofed())) {
-            res.status(403).json({error:"Suplantacion de identidad detectada"});
-            return;
-        }
-        next()
-    } catch (error) {
-        console.log("Arcjet error", error);
-        next(error);
-    }
-})
+    })
+}
 
 //RUTAS DE APIS    
 app.use("/api/haircuts", haircutsRoute);
@@ -83,7 +87,9 @@ async function initDB() {
     }
 }
 
-
+app.get('/',(req,res)=> {
+    App
+});
 
 app.get('/test',(req,res)=> {
     console.log(res.getHeaders());

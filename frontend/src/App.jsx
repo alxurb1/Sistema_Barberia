@@ -1,15 +1,12 @@
-
-import './App.css'
-import { Card } from './components/Card'
+import React from 'react'
 
 function App() {
-
   return (
-    <>
-      <h1>BARBER SHOP</h1>
-      <Card/>
-    </>
+    <div>
+      
+    </div>
   )
 }
 
 export default App
+

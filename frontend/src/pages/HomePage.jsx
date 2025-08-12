@@ -1,11 +1,14 @@
 import React from 'react'
+import  Dashboard  from '../components/Dashboard/Dashboard';
+import  Sidebar  from '../components/Sidebar/Sidebar';
 
 function HomePage() {
   return (
-    <div>
-      <h1>HOME PAGE</h1>
-    </div>
-  )
+    <main className='grid gap-4 p-4 grid-cols-[220px,_1fr]'>
+      <Sidebar/>
+      <Dashboard/>
+    </main>
+  );
 }
 
 export default HomePage

@@ -1,44 +1,28 @@
-import { Palette } from "lucide-react";
-import { THEMES } from "../constanst";
-import { useThemeStore } from "../store/useThemeStore";
+import { Moon, Sun } from "lucide-react";
+import { useThemeStore } from "../store/useThemeStore"; // ajustá la ruta
 
-function ThemeSelector() {
-  const {theme, setTheme} = useThemeStore();
-  console.log(theme);
+const ThemeSelector = () => {
+  const { theme, setTheme } = useThemeStore();
+
+  const toggleTheme = () => {
+    const newTheme = theme === "dark" ? "light" : "dark";
+    setTheme(newTheme);
+    document.documentElement.setAttribute("data-theme", newTheme);
+  };
+
   return (
-    <div className="dropdown dropdown-end">
-      {/* Disparador */}
-      <button tabIndex={0} className="btn btn-ghost btn-circle">
-        <Palette className="size-5" />
-      </button>
-
-      {/* Contenido del dropdown */}
-      <div
-        tabIndex={0}
-        className="dropdown-content mt-2 p-1 shadow-2xl bg-base-200 backdrop-blur-lg rounded-2xl w-56 border border-base-content/10"
-      >
-        {THEMES.map((themeOption) => (
-          <button
-            key={themeOption.name}
-            className={`
-              w-full px-4 py-3 rounded-xl flex items-center gap-3 transition-colors 
-              ${theme === themeOption.name ? "bg-primary/10 text-primary" : "hover:bg-base-content/5"}
-            `}
-            onClick={()=>setTheme(themeOption.name)}
-          >
-            <Palette className="size-4" />
-            <span className="text-sm font-medium">{themeOption.label}</span>
-            {/*Preseleccion de tema */}
-            <div className="ml-auto flex gap-1">
-              {themeOption.colors.map((color,i) => (
-                <span key={i} className="size-2 rounded-full" style={{backgroundColor:color}}/>
-              ))} 
-            </div>
-          </button>
-        ))}
-      </div>
-    </div>
+    <button className="btn btn-ghost btn-circle " onClick={toggleTheme}>
+      {theme === "dark" ? <div className="indicator">
+        <div className="p-2 rounded-full hover:bg-base-200 transition-colors">
+          <Sun className="size-5"/>
+        </div>
+      </div> : <div className="indicator">
+        <div className="p-2 rounded-full hover:bg-base-200 transition-colors">
+          <Moon className="size-5"/>
+        </div>
+      </div>}
+    </button>
   );
-}
+};
 
 export default ThemeSelector;
